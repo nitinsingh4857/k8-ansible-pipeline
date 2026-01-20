@@ -1,13 +1,19 @@
-- name: Deploy Kubernetes Resources
-  hosts: localhost
-  gather_facts: false
-
-  vars:
-    kubeconfig: ~/.kube/config
-
+---
+- name: Deploy Kubernetes Application
+  hosts: all
+  become: yes
   tasks:
-    - name: Apply deployment
+    - name: Ensure namespace exists
       kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: prod
+
+    - name: Apply Kubernetes manifests
+      kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('file', 'k8s/deployment.yaml') }}"
+
