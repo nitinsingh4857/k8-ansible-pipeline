@@ -1,12 +1,10 @@
-# General pipeline config
-SLACK_CHANNEL_NAME: "#build-status"
-ENVIRONMENT: prod
-ACTION_MESSAGE: "Kubernetes Deployment completed!"
+SLACK_CHANNEL_NAME: "#jenkins-lab"
+SLACK_CREDENTIAL_ID: "slack-token"
+ENVIRONMENT: "prod"
+ANSIBLE_REPO_URL: "https://github.com/nitinsingh4857/ansible-k8s-automation.git"
+ANSIBLE_REPO_BRANCH: "main"
+PLAYBOOK_PATH: "deploy-k8s.yml"
+INVENTORY_PATH: "inventories/prod/hosts"
+ACTION_MESSAGE: "Deployment to PROD completed successfully!"
 KEEP_APPROVAL_STAGE: true
-
-# Ansible repo and playbook config
-ANSIBLE_REPO: "https://github.com/nitinsingh4857/ansible-k8s-automation.git"
-ANSIBLE:
-  PLAYBOOK: deploy-k8s.yml
-  INVENTORY: inventories/prod/hosts
 
