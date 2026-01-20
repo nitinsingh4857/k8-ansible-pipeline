@@ -1,0 +1,12 @@
+SLACK_CHANNEL_NAME: build-status
+ENVIRONMENT: prod
+CODE_BASE_PATH: .
+
+ACTION_MESSAGE: "Kubernetes deployment to PROD"
+KEEP_APPROVAL_STAGE: true
+
+ANSIBLE:
+  PLAYBOOK: /opt/ansible/deploy-k8s.yml
+  INVENTORY: /opt/ansible/inventories/prod/hosts
+  EXTRA_VARS:
+    app_name: sample-app
