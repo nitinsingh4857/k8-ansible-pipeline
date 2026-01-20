@@ -1,6 +1,5 @@
 @Library('jenkins-shared-library') _
-
-
+def cfg 
 pipeline {
     agent any
     stages {
