@@ -1,6 +1,5 @@
 @Library('jenkins-shared-library') _
 
-def cfg = readYaml file: 'config.yml'
 
 pipeline {
     agent any
@@ -14,6 +13,7 @@ pipeline {
         stage('Load Config') {
             steps {
                 script {
+                    def cfg = readYaml file: 'config.yml'
                     echo "Loaded configuration for ${cfg.ENVIRONMENT}"
                 }
             }
