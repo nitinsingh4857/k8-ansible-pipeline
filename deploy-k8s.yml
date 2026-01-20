@@ -1,0 +1,13 @@
+- name: Deploy Kubernetes Resources
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    kubeconfig: ~/.kube/config
+
+  tasks:
+    - name: Apply deployment
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        state: present
+        definition: "{{ lookup('file', 'k8s/deployment.yaml') }}"
