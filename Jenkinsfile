@@ -1,16 +1,9 @@
 @Library('jenkins-shared-library') _
 
+def cfg = readYaml file: 'config.yml'
+
 pipeline {
     agent any
-
-    environment {
-        SLACK_CHANNEL_NAME = '#jenkins-lab'
-        ENVIRONMENT       = 'prod'
-        CODE_BASE_PATH    = 'env/prod'
-        ACTION_MESSAGE    = 'Deploying application'
-        KEEP_APPROVAL_STAGE = 'true'
-    }
-
     stages {
         stage('Checkout SCM') {
             steps {
@@ -18,49 +11,31 @@ pipeline {
             }
         }
 
-        stage('Load Configuration') {
+        stage('Load Config') {
             steps {
                 script {
-                    cfg = readYaml file: 'config.yml'
                     echo "Loaded configuration for ${cfg.ENVIRONMENT}"
                 }
             }
         }
 
-        stage('Clone') {
+        stage('Deploy via Ansible') {
             steps {
                 script {
-                    echo "Repository already checked out by Jenkins"
-                }
-            }
-        }
-
-        stage('User Approval') {
-            steps {
-                script {
-                    input message: "Approve deployment to ${cfg.ENVIRONMENT}?", ok: "Deploy"
-                }
-            }
-        }
-
-        stage('Ansible Playbook Execution') {
-            steps {
-                // ✅ Here we set the kubeconfig environment variable
-                script {
-                    withEnv(["K8S_AUTH_KUBECONFIG=/var/lib/jenkins/.kube/config"]) {
-                        k8sAnsibleDeploy(cfg)
-                    }
+                    k8sAnsibleDeploy(cfg)
                 }
             }
         }
     }
-
     post {
-        success {
-            slackSend(channel: "${SLACK_CHANNEL_NAME}", color: 'good', message: "Deployment to ${ENVIRONMENT} succeeded")
-        }
         failure {
-            slackSend(channel: "${SLACK_CHANNEL_NAME}", color: 'danger', message: "Deployment to ${ENVIRONMENT} failed")
+            slackSend(
+                channel: cfg.SLACK_CHANNEL_NAME.startsWith('#') ? cfg.SLACK_CHANNEL_NAME : "#${cfg.SLACK_CHANNEL_NAME}",
+                color: 'danger',
+                botUser: true,
+                tokenCredentialId: cfg.SLACK_CREDENTIAL_ID,
+                message: "Deployment failed for ${cfg.ENVIRONMENT}"
+            )
         }
     }
 }
