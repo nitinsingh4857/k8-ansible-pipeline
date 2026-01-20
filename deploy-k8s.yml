@@ -1,19 +1,18 @@
 ---
 - name: Deploy Kubernetes Application
-  hosts: all
-  become: yes
+  hosts: localhost
+  connection: local
+  gather_facts: yes
   tasks:
+
     - name: Ensure namespace exists
       kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: my-app
         state: present
-        definition:
-          apiVersion: v1
-          kind: Namespace
-          metadata:
-            name: prod
 
-    - name: Apply Kubernetes manifests
+    - name: Deploy sample application
       kubernetes.core.k8s:
         state: present
-        definition: "{{ lookup('file', 'k8s/deployment.yaml') }}"
-
+        definition: "{{ lookup('file', 'k8s/deployment.yaml') | from_yaml }}"
