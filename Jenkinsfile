@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        SLACK_CHANNEL_NAME = 'build-status'
+        SLACK_CHANNEL_NAME = '#jenkins-lab'
         ENVIRONMENT       = 'prod'
         CODE_BASE_PATH    = 'env/prod'
         ACTION_MESSAGE    = 'Deploying application'
